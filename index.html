@@ -4,8 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <script src="console.js"></script>
 </head>
 <body>
+  <script>
+    // init vConsole
+    var vConsole = new VConsole();
+    console.log('Hello world');
+  </script>
   <div>xdx真帅啊</div>
+  <div>接收到信息：<span id="Msg">未收到</span></div>
+  <script>
+    system.onmessage = function(data) {
+      document.querySelector('#Msg').innerHTML = data
+      console.log('message received: ' + data)
+    }
+    system.postMessage('hello')
+  </script>
 </body>
 </html>
