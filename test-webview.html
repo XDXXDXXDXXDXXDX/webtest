@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>测试小程序 Webview</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/kognise/water.css@latest/dist/dark.min.css"
+    />
+  </head>
+  <body>
+    <div class="warpper">
+      <div class="content">
+        <pre>
+  如果再回到从前所有一切重演
+  我是否会明白生活重点
+  不怕措折打击没有空虚埋怨
+  让我看得更远
+        </pre>
+      </div>
+      <button onclick="onJumpToWebviewClick()">navigateTo Webview Page</button>
+      <button onclick="onNavigateBackClick()">navigateBack</button>
+      <button onclick="reLaunch()">reLaunch</button>
+      <button onclick="redirectTo()">redirectTo（Webview）</button>
+      <button onclick="switchTab()">switchTab（Logs）</button>
+      <button onclick="onPostMessageAndNavigateBackClick()">postMessage & navigateBack</button>
+      <button onclick="postMessage()">postMessage</button>
+      <button onclick="chooseImage()">chooseImage(暂不支持)</button>
+
+      <br>
+      <br>
+      <a style="color: #2edfa3" href="http://172.25.70.224:8037/nicejade/test-webview-trust.html">跳转至信任页面，API 可调用</a>
+      <br>
+      <br>
+      <a style="color: #ed1941" href="http://172.25.70.224:8037/nicejade/test-webview-no-trust.html">跳转至未信任页面，API 不可调用</a>
+      <br>
+      <br>
+      <br>
+      <a href="https://nicelinks.site/explore/resource">A 标签跳转至已信任页面(正则)</a>
+      <br>
+      <a href="https://doc.quickapp.cn/widgets/web.html">A 标签跳转至已信任页面(String)</a>
+    </div>
+  </body>
+  <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+  <script type="text/javascript" src="https://quickapp/jssdk.webview.min.js"></script>
+
+  <script>
+    // const isInQuickapp = window.__qajs_environment === 'quickapp'
+    // const $main = isInQuickapp ? window.qa : wx.miniProgram
+    // const $ = isInQuickapp ? window.qa : wx
+    let $main
+    let $
+
+    // alert(navigator.userAgent.includes('quickapp'))
+    // alert(window.__qajs_environment)
+
+     document.addEventListener(
+      'QaJSBridgeReady',
+      params => {
+        $main = window.qa
+        $ = window.qa
+        // alert(JSON.stringify(params, null, 2))
+        console.log(`@JSDK 监听到 QaJSBridgeReady，参数`, window.qa, JSON.stringify(params, null, 2))
+        // $main.postMessage({ data: { foo: 'QaJSBridgeReady' } })
+        // $main.postMessage({ data: { foo: 'QaJSBridgeReady Test' } })
+        // $main.postMessage({ data: { foo: '测试组件销毁 postMessage' } })
+
+        $main.getEnv(function(res) {
+          console.log(`@JSDK getEnv 回调`, JSON.stringify(res, null, 2))
+        })
+      },
+      true
+    )
+
+    document.addEventListener(
+      'WeixinJSBridgeReady',
+      params => {
+        $main = wx.miniProgram
+        $ = wx
+        // alert(JSON.stringify(params, null, 2))
+        console.log(JSON.stringify(params, null, 2))
+      },
+      false
+    )
+
+    function onJumpToWebviewClick() {
+      console.log(`@onJumpToWebviewClick`)
+      $main.navigateTo({
+        url: '/page/component/pages/webview-light/webview-light',
+        success: function(res) {
+          // alert('navigateTo webview Page success.')
+          console.log(`navigateTo webview Page Success.`)
+        },
+        fail: function(res) {
+          // alert('navigateTo webview Page fail.')
+          console.log(`navigateTo webview Page fail.`)
+        },
+        complete: function(res) {
+          // alert('navigateTo webview Page complete.')
+          console.log(`navigateTo webview Page complete.`)
+        }
+      })
+    }
+
+    function onNavigateBackClick() {
+      // console.log(`@onNavigateBackClick`)
+      ($main || window.qa).navigateBack({
+        delta: 1,
+        success: function(res) {
+          console.log(`@onNavigateBackClick Success.`)
+        }
+      })
+    }
+
+    function switchTab() {
+      console.log(`@switchTab`)
+
+      $main.switchTab({
+        url: '/page/core/index'
+      })
+    }
+
+    function onPostMessageAndNavigateBackClick() {
+      console.log(`@onPostMessageAndNavigateBackClick`)
+      $main.postMessage({ data: { foo: 'bar 001' } })
+      $main.navigateBack({
+        delta: 1,
+        success: function(res) {
+          console.log(`@onPostMessageAndNavigateBackClick Success.`)
+        },
+        fail: function(res) {
+          alert('onPostMessageAndNavigateBackClick fail.')
+          console.log(`onPostMessageAndNavigateBackClick fail.`)
+        },
+        complete: function(res) {
+          alert('onPostMessageAndNavigateBackClick complete.')
+          console.log(`onPostMessageAndNavigateBackClick complete.`)
+        }
+      })
+
+      $main.postMessage({ data: { foo: 'bar 002' } })
+      $main.postMessage({ data: { foo: 'bar 003' } })
+      $main.postMessage({ data: { foo: 'bar 0011' } })
+      $main.postMessage({ data: { foo: 'bar 0022' } })
+      $main.postMessage({ data: { foo: 'bar 0033' } })
+    }
+
+    function postMessage() {
+      $main.postMessage({ foo: '李春娇娇～～' })
+      $main.postMessage({ data: { foo: '天天向上 001' } })
+      $main.postMessage('李春娇娇～～')
+      $main.postMessage({ data: { foo: '天天向上 002' } })
+      $main.postMessage({ data: { foo: { foo: '李春娇娇～～' } } })
+      $main.postMessage({ data: { foo: '天天向上 003' } })
+      $main.postMessage({ data: {} })
+      $main.postMessage({ data: { foo: '天天向上 004' } })
+      $main.postMessage({ data: '李春娇娇～～' })
+      $main.postMessage({ data: true })
+      $main.postMessage({ data: 9527 })
+      $main.postMessage({ data: null })
+      $main.postMessage({ data: new Date() })
+      $main.postMessage({ data: NaN })
+      $main.postMessage({ data: () => { console .log(111) } })
+      $main.postMessage({ data: { foo: '天天向上 005' } })
+    }
+
+    function reLaunch() {
+      console.log(`@reLaunch`)
+      $main.reLaunch({
+        url: '/page/core/index',
+        success: function(res) {
+          console.log(`navigateTo Logs Page Success.`)
+        }
+      })
+    }
+
+    function redirectTo() {
+      console.log(`@redirectTo`)
+      $main.redirectTo({
+        url: '/page/component/pages/webview-light/webview-light',
+        success: function(res) {
+          console.log(`navigateTo webview Page Success.`)
+        }
+      })
+    }
+
+    function chooseImage() {
+      console.log(`@chooseImage`)
+      $.chooseImage({
+        count: 1,
+        sizeType: ['original', 'compressed'],
+        sourceType: ['album', 'camera'],
+        success(res) {
+          // tempFilePath可以作为img标签的src属性显示图片
+          const tempFilePaths = res.tempFilePaths
+          console.log(`@chooseImage`, tempFilePaths)
+        }
+      })
+    }
+  </script>
+</html>
