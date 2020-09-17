@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="format-detection" content="telephone=no, email=no" />
+  <title>测试账户</title>
+  <style>
+    #result {
+      white-space: wrap;
+      word-break: break-all;
+    }
+
+    p {
+      background-color: #f0f0f0;
+      margin: 10px;
+    }
+
+    .btn {
+      display: block;
+      margin: 10px;
+      background-color: green;
+      color: #fff;
+      line-height: 30px;
+      padding: 0 20px;
+      border-radius: 15px;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .b1 {
+      background-color: blue;
+    }
+
+    .b2 {
+      background-color: red;
+    }
+
+    .b3 {
+      background-color: darkorange;
+    }
+
+    .txt {
+      padding: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>webview授权测试</h2>
+  <a class="btn b1" href="javascript:void(0)" onClick="Authorization()">测试授权模式no scope</a>
+  <a class="btn b1" href="javascript:void(0)" onClick="Authorization(1)">测试授权模式scope</a>
+  <a class="btn b2" href="javascript:void(0)" onClick="Implicit()">测试简化模式no scope</a>
+  <a class="btn b2" href="javascript:void(0)" onClick="Implicit(1)">测试简化模式scope</a>
+  <a class="btn" href="javascript:void(0)" onClick="GetProvider()">测试getProvider</a>
+  <a class="btn" href="javascript:void(0)" onClick="GetProfile()">测试getProfile</a>
+  <div id="result"></div>
+  <h2>webview支付测试</h2>
+  <a class="btn b3" href="javascript:void(0)" onClick="Pay()">测试支付</a>
+  <div id="result2"></div>
+  <h2>webview回到快应用特定页面</h2>
+  <a class="btn b1" href="javascript:void(0)" onClick="GoRpk()">测试system.go</a>
+  <h2>webview调起快应用测试</h2>
+  <div>
+    <input type="text" value="com.gate2.demo" class="txt" id="appName">
+  </div>
+  <a class="btn b2" href="javascript:void(0)" onClick="LaunchApp()">测试拉起快应用</a>
+  <h2>webview 302测试</h2>
+  <a class="btn b3" href="javascript:void(0)" onClick="test302()">测试302</a>
+  <h2>cookie测试</h2>
+  <a class="btn" href="javascript:void(0)" onClick="setCookie('test', 'ok', 30)">设置cookie</a>
+  <a class="btn" href="javascript:void(0)" onClick="alertCookie('test')">获取cookie</a>
+  <h2>User Agent</h2>
+  <a class="btn" href="javascript:void(0)" onClick="getUserAgent()">获取User Agent</a>
+  <div id="ua-result"></div>
+  <script>
+    var mode = 1;
+    var returnedTocken = null;
+    var authorizeResultWrap = document.getElementById('result');
+    var payResultWrap = document.getElementById('result2');
+    var uaWrap = document.getElementById('ua-result');
+    var authorizeCallback = function (code, info, result) {
+      var cccc = document.createElement('p');
+      cccc.innerHTML = 'code:' + code + (info ? ('|info:' + JSON.stringify(info)) : '') + (result ? ('|result:' + JSON.stringify(result)) : '');
+      if (mode === 2) {
+        returnedTocken = JSON.parse(result).accessToken;
+      }
+      authorizeResultWrap.appendChild(cccc);
+    };
+    var payCallback = function (code, info, result) {
+      var cccc = document.createElement('p');
+      cccc.innerHTML = 'code:' + code + (info ? ('|info:' + JSON.stringify(info)) : '') + (result ? ('|result:' + JSON.stringify(result)) : '');
+      if (mode === 2) {
+        returnedTocken = JSON.parse(result).accessToken;
+      }
+      payResultWrap.appendChild(cccc);
+    };
+    var launchCallback = function (res) {
+      alert(JSON.stringify(res))
+    };
+    var launchDataCallback = function (res) {
+      alert(JSON.stringify(res))
+    };
+    // var couldUse = typeof window.account != 'undefined' && window.account.authorize;
+    function Authorization(s) {
+      if (typeof window.account != 'undefined') {
+        if (window.account.authorize) {
+          mode = 1;
+          window.account.authorize(JSON.stringify({
+            type: 'code',
+            scope: (typeof s == 'undefined' ? '' : 'scope.baseProfile'),
+            redirectUri: "http://www.oppo.com/",
+            callbackFunc: 'authorizeCallback'
+          }))
+        }
+      }
+    }
+    function Implicit(s) {
+      if (typeof window.account != 'undefined') {
+        if (window.account.authorize) {
+          mode = 2;
+          window.account.authorize(JSON.stringify({
+            type: 'token',
+            scope: (typeof s == 'undefined' ? '' : 'scope.baseProfile'),
+            redirectUri: "http://www.oppo.com/",
+            callbackFunc: 'authorizeCallback'
+          }))
+        }
+      }
+    };
+    function GetProvider() {
+      if (typeof window.account != 'undefined') {
+        if (account.getProvider) {
+          mode = 1;
+          authorizeCallback('', '', account.getProvider());
+        }
+      }
+    };
+    function GetProfile() {
+      if (typeof window.account != 'undefined') {
+        if (account.getProfile) {
+          alert(returnedTocken);
+          if (returnedTocken) {
+            window.account.getProfile(JSON.stringify({
+              token: returnedTocken,
+              callbackFunc: 'authorizeCallback'
+            }))
+          } else {
+            alert('请先使用简化模式授权')
+          }
+        }
+      }
+    };
+    function Pay() {
+      if (typeof window.pay != 'undefined') {
+        if (pay.pay) {
+          window.pay.pay(JSON.stringify({
+            orderInfo: {
+              'cpOrderId': (new Date()).getTime(),
+              'productName': 'iWatch',
+              'productDesc': '42mm',
+              'callBackUrl': 'https://183.131.22.101:8010/jitsopen/api/pay/demo/notify',
+              'price': 1,
+              'attach': '',
+              'appKey': 'oppopay',
+              'appId': '5000254',
+              'timestamp': (new Date()).getTime(),
+              'sign': 'abcd'
+            },
+            callbackFunc: 'payCallback'
+          }))
+        }
+      }
+    };
+    function GoRpk() {
+      if (typeof window.system != 'undefined') {
+        if (system.go) {
+          // 回到快应用首页
+          system.go('/')
+        }
+      }
+    };
+    function LaunchApp() {
+      if (typeof window.launcher != 'undefined') {
+        if (launcher.open) {
+          launcher.open(JSON.stringify({
+            packageName: document.getElementById('appName').value,
+            path: '/About?xxx=666',
+            appParams: {
+              'abc': 123,
+              'def': 456
+            },
+            callbackFunc: 'launchCallback',
+            onResultFunc: 'launchDataCallback'
+          }))
+        }
+      }
+    }
+
+    function test302() {
+      window.location.href = 'http://www.360buy.com'
+    }
+
+    function setCookie(c_name, value, expiredays) {
+      var exdate = new Date()
+      exdate.setDate(exdate.getDate() + expiredays)
+      document.cookie = c_name + "=" + escape(value) +
+        ((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+    }
+
+    function getCookie(c_name) {
+      if (document.cookie.length > 0) {
+        c_start = document.cookie.indexOf(c_name + "=")
+        if (c_start != -1) {
+          c_start = c_start + c_name.length + 1
+          c_end = document.cookie.indexOf(";", c_start)
+          if (c_end == -1) c_end = document.cookie.length
+          return unescape(document.cookie.substring(c_start, c_end))
+        }
+      }
+      return ""
+    }
+
+    function alertCookie(c_name) {
+      alert(getCookie(c_name))
+    }
+
+    function checkCookie() {
+      username = getCookie('username')
+      if (username != null && username != "") { alert('Welcome again ' + username + '!') }
+      else {
+        username = prompt('Please enter your name:', "")
+        if (username != null && username != "") {
+          setCookie('username', username, 365)
+        }
+      }
+    }
+
+    function getUserAgent() {
+      uaWrap.innerHTML = navigator.userAgent
+    }
+  </script>
+</body>
+
+</html>
