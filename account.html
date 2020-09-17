@@ -85,13 +85,17 @@
     var payResultWrap = document.getElementById('result2');
     var uaWrap = document.getElementById('ua-result');
     var authorizeCallback = function (code, info, result) {
+      console.log(code, info, result)
       console.log('执行回调')
       var cccc = document.createElement('p');
       cccc.innerHTML = 'code:' + code + (info ? ('|info:' + JSON.stringify(info)) : '') + (result ? ('|result:' + JSON.stringify(result)) : '');
       if (mode === 2) {
         returnedTocken = JSON.parse(result).accessToken;
       }
+      console.log('执行回调2')
       authorizeResultWrap.appendChild(cccc);
+      console.log('执行回调3')
+      alert(code, info, result)
     };
     var payCallback = function (code, info, result) {
       var cccc = document.createElement('p');
