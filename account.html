@@ -85,6 +85,7 @@
     var payResultWrap = document.getElementById('result2');
     var uaWrap = document.getElementById('ua-result');
     var authorizeCallback = function (code, info, result) {
+      console.log('执行回调')
       var cccc = document.createElement('p');
       cccc.innerHTML = 'code:' + code + (info ? ('|info:' + JSON.stringify(info)) : '') + (result ? ('|result:' + JSON.stringify(result)) : '');
       if (mode === 2) {
@@ -108,6 +109,7 @@
     };
     // var couldUse = typeof window.account != 'undefined' && window.account.authorize;
     function Authorization(s) {
+      console.log('开始进行授权')
       if (typeof window.account != 'undefined') {
         if (window.account.authorize) {
           mode = 1;
