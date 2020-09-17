@@ -110,9 +110,13 @@
     // var couldUse = typeof window.account != 'undefined' && window.account.authorize;
     function Authorization(s) {
       console.log('开始进行授权')
+      console.log(window.account)
       if (typeof window.account != 'undefined') {
+        console.log('存在window.account')
         if (window.account.authorize) {
+          console.log('存在window.account.authorize')
           mode = 1;
+          console.log('开始window.account.authorize')
           window.account.authorize(JSON.stringify({
             type: 'code',
             scope: (typeof s == 'undefined' ? '' : 'scope.baseProfile'),
