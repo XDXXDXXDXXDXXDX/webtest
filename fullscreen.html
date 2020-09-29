@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #videoSample {
+      height: 300px;
+      width: 300px;
+    }
+  </style>
+</head>
+<body onfocus="showSth()" onload="xdxonload()">
+  <script>
+    function xdxonload() {
+      console.log(123123)
+    }
+    console.log(8798789)
+  </script>
+  <script>
+    function xdxonload() {
+      console.log(567567567)
+    }
+    console.log(999)
+  </script>
+  <input onfocus="showSth()">
+  <canvas id="myCanvas" width="200" height="100"
+  style="border:1px solid #000000;">
+  </canvas>
+  <canvas id="myCanvas2" width="200" height="100"
+  style="border:1px solid #000000;">
+  </canvas>
+  <script>
+    function showSth() {
+      console.log('body show le ')
+    }
+    var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+ctx.fillStyle="#FF0000";
+ctx.fillRect(0,0,150,75);
+var d=document.getElementById("myCanvas2");
+const gl = d.getContext('webgl')
+      gl.clearColor(1, 0, 1, 1)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+  </script>
+  <xdx-shuai id="xdxzhenshuai"><div id="xdx666666">xdx超级无敌帅啊</div></xdx-shuai>
+  <button onclick="bindend()">点击马上触发</button>
+  <div id="control"></div>
+  <template id="videoId2"><div>xdxdxdxdxdx</div></template>
+  <template id="videoId">
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        width: 400px;
+        height: 400px;
+      }
+      #videoSample {
+        width: 100%;
+        height: 100%;
+      }
+      #control {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+      div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+    </style>
+    <xdx-shuai2 id="xdxzhenshuai2"></xdx-shuai2>
+    <slot></slot>
+    <video id="videoSample" controls="controls" onclick="xdxshuai()" onerror="errorle()" autoplay onended="testend()" muted src="http://wxsnsdy.tc.qq.com/105/20210/snsdyvideodownload?filekey=30280201010421301f0201690402534804102ca905ce620b1241b726bc41dcff44e00204012882540400&bizid=1023&hy=SH&fileparam=302c020101042530230204136ffd93020457e3c4ff02024ef202031e8d7f02030f42400204045a320a0201000400"></video>
+    <div id="control">
+      <button id="fullscreen1">进入全屏</button>
+      <button id="fullscreen2" onclick="this.fullscreenWebkit">进入全屏webkit</button>
+    </div>
+  </template>
+  <script>
+    var a = document.getElementById('control')
+    console.dir(a)
+    // setTimeout(() => {
+    //   debugger
+    //   a.innerHTML = "666xdx666"
+    //   a.replaceWith(document.createElement('p'))
+    //   console.log(12312312312)
+    // }, 5000);
+    // a.innerHTML = "xdx666"
+    class player extends HTMLElement {
+      constructor() {
+        super();
+        var shadow = this.attachShadow( { mode: 'open' } );
+        var templateElem = document.getElementById('videoId');
+        var content = templateElem.content.cloneNode(true);
+        content.querySelector('#fullscreen1').onclick = this.fullscreen.bind(this)
+        content.querySelector('#fullscreen2').onclick = this.fullscreenWebkit.bind(this)
+        shadow.appendChild(content);
+        this.shadowRoot.querySelector('#videoSample').addEventListener('error', errorle)
+        this.shadowRoot.querySelector('#videoSample').onerror = function(){
+          console.log('xdx很帅2')
+        }
+        // this.appendChild(content);
+      }
+      fullscreen() {
+        this.shadowRoot.querySelector('#videoSample').requestFullscreen()
+        screen.orientation.lock("landscape-primary");
+      }
+      fullscreenWebkit() {
+        this.shadowRoot.querySelector('#videoSample').webkitRequestFullScreen()
+      }
+    }  
+    class player2 extends HTMLElement {
+      constructor() {
+        super();
+        var shadow = this.attachShadow( { mode: 'open' } );
+        var templateElem = document.getElementById('videoId2');
+        var content = templateElem.content.cloneNode(true);
+        shadow.appendChild(content);
+        // this.appendChild(content);
+      }
+      fullscreen() {
+        this.shadowRoot.querySelector('#videoSample').requestFullscreen()
+        screen.orientation.lock("landscape-primary");
+      }
+      fullscreenWebkit() {
+        this.shadowRoot.querySelector('#videoSample').webkitRequestFullScreen()
+      }
+    }  
+    window.customElements.define('xdx-shuai', player); 
+    window.customElements.define('xdx-shuai2', player2); 
+    function testend() {
+      console.log('video ended')
+    }
+    function errorle() {
+      console.log('video error')
+    }
+    function bindend() {
+      const endEvent = new CustomEvent('ended')
+      document.getElementById('xdxzhenshuai').shadowRoot.querySelector('#videoSample').dispatchEvent(endEvent)
+    }
+    window.addEventListener('error', function() {
+      console.log('xdxqweqwe')
+    }, true)
+    function xdxshuai() {
+      console.log('zhende666')
+    }
+  </script>
+</body>
+</html>
